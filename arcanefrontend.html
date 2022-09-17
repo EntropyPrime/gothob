@@ -1,0 +1,116 @@
+<link rel="stylesheet" href="XiWiki/contrastmodes.css"> 
+<body class="dark-theme || light-theme">
+<script src="XiWiki/colormanager.js"></script>
+<script src="./arcanegraph.js"></script>
+<h1>Reality Hacker Interface</h1>
+<br>
+<h2 id="sigilState">sigil state:  </h2>
+<br>
+
+<input type="checkbox" style="display:inline;" id="loggingModeToggle" onclick="setLoggingModeToggle();"><p style="display:inline;">Log Changes to Sigil Hash</p>
+<input type="checkbox" style="display:inline;" id="bidirectional" onclick="renderConnections();" checked><p style="display:inline;">Bidirectional Actions</p>
+<br>
+<input type="text" id="newVertexName" style="display:inline;"> 
+<input type="button" value="Add Vertex" onclick="addVertexButton();">
+<br>
+<input type="text" id="newEdgeN1" style="display:inline;"> <p style="display:inline;" id="newEdgeArrow">-></p> <input type="text" id="newEdgeN2" style="display:inline;">
+<input type="button" value="Add Edge" onclick="addEdgeButton();">
+<br> <br>
+
+<div id="graphState">
+    <p>initial</p>
+</div>
+
+<script>
+document.getElementById("loggingModeToggle").checked = false;
+document.getElementById("bidirectional").checked = true;
+loggingMode = false;
+addVertex(new Symbol(realityAlias));
+
+function setLoggingModeToggle() {
+    loggingMode = document.getElementById("loggingModeToggle").checked;
+}
+
+function addVertexButton() {
+    let vertName = document.getElementById("newVertexName").value;
+
+    if(vertName != "") {
+        console.log("adding vertex " + vertName);
+        addVertex(new Symbol(vertName));
+    }
+
+    renderConnections();
+}
+
+function addEdgeButton() {
+    let vert1 = document.getElementById("newEdgeN1").value;
+    let vert2 = document.getElementById("newEdgeN2").value;
+
+    if(Vertices[vert1] == null || Vertices[vert2] == null) {
+        return;
+    }
+
+    newEdgeDirection = DOUT;
+
+    if(document.getElementById("bidirectional").checked)
+        newEdgeDirection = DIO;
+    else
+        newEdgeDirection = DOUT;
+    
+    addEdge(Vertices[vert1], Vertices[vert2], newEdgeDirection);
+    renderConnections();
+}
+
+function removeVertexButton(vertName) {
+    let vertex = Vertices[vertName];
+    if(vertex == null) {
+        console.log("null vertex");
+        return;
+    }
+    
+    removeVertex(vertex, true);
+    renderConnections();
+}
+
+function removeEdgeButton(vertN1, vertN2) {
+    if(Vertices[vertN1] == null || Vertices[vertN2] == null) {
+        return;
+    }
+
+    removeEdgeDirection = DOUT;
+
+    if(document.getElementById("bidirectional").checked)
+        removeEdgeDirection = DIO;
+    else
+        removeEdgeDirection = DOUT;
+
+    removeEdge(Vertices[vertN1], Vertices[vertN2], removeEdgeDirection);
+    renderConnections();
+}
+
+function renderConnections() {
+    document.getElementById("sigilState").innerText = "Sigil state: " + getSigil();
+
+    if(document.getElementById("bidirectional").checked == true) {
+        document.getElementById("newEdgeArrow").innerText = "<->";
+    }else {
+        document.getElementById("newEdgeArrow").innerText = "->";
+    }
+
+    updateGraphState = "";
+
+    for(let vertex of Object.entries(Vertices)) {
+        updateGraphState += "<h3><b>" + vertex[1].symbol.symText + "->: </b></h3>";
+        for(let item of vertex[1].pointsTo) {
+            updateGraphState += "<p style=\"display:inline;\">" + item.symbol.symText + " </p>";
+            updateGraphState += "<input type=\"button\" value=\"Delete Edge\" onclick=\"removeEdgeButton(\'" + vertex[0] + "\', \'" + item.symbol.symText + "\');\"><br>";
+        }
+
+        updateGraphState += "<input type=\"button\" value=\"Delete Vertex\" onclick=\"removeVertexButton(\'" + vertex[1].symbol.symText + "\');\">"
+    }
+
+    document.getElementById("graphState").innerHTML = updateGraphState;
+}
+
+renderConnections();
+</script>

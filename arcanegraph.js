@@ -158,10 +158,13 @@ function removeEdge(vertexA, vertexB, direction) {
         vertexB.pointedToBy.delete(vertexA);
     }
 
-    new Log(LREMOVEEDGE, "remove edge " + vertexA.symbol.symText + " " + vertexB.symbol.symText + " " + direction, vertexA, vertexB, direction);
+    if(loggingMode)
+        new Log(LREMOVEEDGE, "remove edge " + vertexA.symbol.symText + " " + vertexB.symbol.symText + " " + direction, vertexA, vertexB, direction);
 }
 
 function removeVertex(toRemove, autoResolveEdges = false) {
+    console.log("called remove vertex with autoresolve of " + autoResolveEdges + "on vertex ");
+    console.log(toRemove);
     if(toRemove.pointsTo.size != 0 || toRemove.pointedToBy.size != 0)
     {
         if(!autoResolveEdges)
@@ -185,7 +188,7 @@ function removeVertex(toRemove, autoResolveEdges = false) {
     if(loggingMode)
         new Log(LREMOVEVERTEX, "remove vertex " + toRemove.symText, newVertex, null, 0);
 
-    delete Vertices[toRemove.symText];
+    delete Vertices[toRemove.symbol.symText];
 }
 
 function getSigil() {
