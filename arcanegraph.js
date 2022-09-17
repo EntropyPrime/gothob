@@ -186,7 +186,7 @@ function removeVertex(toRemove, autoResolveEdges = false) {
     }
 
     if(loggingMode)
-        new Log(LREMOVEVERTEX, "remove vertex " + toRemove.symText, newVertex, null, 0);
+        new Log(LREMOVEVERTEX, "remove vertex " + toRemove.symText, toRemove, null, 0);
 
     delete Vertices[toRemove.symbol.symText];
 }
