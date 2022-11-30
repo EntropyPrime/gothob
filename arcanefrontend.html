@@ -61,6 +61,23 @@ function addEdgeButton() {
     renderConnections();
 }
 
+function addEdgeDynamicButton(vertN1) {
+    let vertN2 = document.getElementById(vertN1 + "addCompanion").value;
+    if(Vertices[vertN1] == null || Vertices[vertN2] == null) {
+        return;
+    }
+
+    newEdgeDirection = DOUT;
+
+    if(document.getElementById("bidirectional").checked)
+        newEdgeDirection = DIO;
+    else
+        newEdgeDirection = DOUT;
+    
+    addEdge(Vertices[vertN1], Vertices[vertN2], newEdgeDirection);
+    renderConnections();
+}
+
 function removeVertexButton(vertName) {
     let vertex = Vertices[vertName];
     if(vertex == null) {
@@ -106,7 +123,8 @@ function renderConnections() {
             updateGraphState += "<input type=\"button\" value=\"Delete Edge\" onclick=\"removeEdgeButton(\'" + vertex[0] + "\', \'" + item.symbol.symText + "\');\"><br>";
         }
 
-        updateGraphState += "<input type=\"button\" value=\"Delete Vertex\" onclick=\"removeVertexButton(\'" + vertex[1].symbol.symText + "\');\">"
+        updateGraphState += "<input type=\"text\" id=\"" + vertex[0] + "addCompanion\");\"><input type=\"button\" value=\"Quick Add Edge\" onclick=\"addEdgeDynamicButton(\'" + vertex[0] + "\')\"<br>";
+        updateGraphState += "<input type=\"button\" value=\"Delete Vertex\" onclick=\"removeVertexButton(\'" + vertex[1].symbol.symText + "\');\">";
     }
 
     document.getElementById("graphState").innerHTML = updateGraphState;
